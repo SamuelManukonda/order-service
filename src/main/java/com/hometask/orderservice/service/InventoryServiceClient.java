@@ -91,50 +91,7 @@ public class InventoryServiceClient {
             logger.error("Unexpected error while fetching products from inventory service", e);
             throw new RuntimeException("Unexpected error calling inventory service: " + e.getMessage(), e);
         }
-    }
 
-    /**
-     * Fetches all products from the inventory service asynchronously
-     *
-     * @return Mono containing List of ProductDTO objects
-     */
-    public Mono<List<ProductDTO>> getAllProductsAsync() {
-        logger.info("Fetching all products from inventory service (async)");
-
-        return inventoryWebClient
-                .get()
-                .uri(ALL_PRODUCTS_ENDPOINT)
-                .retrieve()
-                .onStatus(
-                        status -> status.is4xxClientError() || status.is5xxServerError(),
-                        response -> {
-                            logger.error("Error response from inventory service: {}", response.statusCode());
-                            return response.bodyToMono(String.class)
-                                    .flatMap(errorBody -> {
-                                        logger.error("Error body: {}", errorBody);
-                                        return Mono.error(new RuntimeException(
-                                                "Failed to fetch products. Status: " + response.statusCode() +
-                                                        ", Body: " + errorBody));
-                                    });
-                        }
-                )
-                .bodyToFlux(ProductDTO.class)
-                .collectList()
-                .retryWhen(reactor.util.retry.Retry.fixedDelay(RETRY_ATTEMPTS, RETRY_DELAY)
-                        .doBeforeRetry(retrySignal ->
-                                logger.warn("Retrying async API call to inventory service. Attempt: {}",
-                                        retrySignal.totalRetries() + 1))
-                )
-                .doOnSuccess(products -> {
-                    if (products != null) {
-                        logger.info("Successfully fetched {} products from inventory service (async)", products.size());
-                        logger.debug("Products retrieved: {}", products);
-                    }
-                })
-                .doOnError(error ->
-                        logger.error("Error fetching products from inventory service (async)", error)
-                )
-                .onErrorReturn(Collections.emptyList());
     }
 }
 

@@ -49,26 +49,7 @@ public class InventoryController {
 
 
     public ResponseEntity<List<ProductDTO>> getStaticProductsFallback(Throwable throwable) {
-        return (ResponseEntity<List<ProductDTO>>) Collections.emptyList();
-    }
-
-    /**
-     * Endpoint to fetch all products from inventory service (asynchronous)
-     *
-     * @return Mono containing ResponseEntity with list of products
-     */
-    @GetMapping("/products/async")
-    public Mono<ResponseEntity<List<ProductDTO>>> getAllProductsAsync() {
-        logger.info("Received async request to fetch all products");
-
-        return inventoryServiceClient.getAllProductsAsync()
-                .map(products -> {
-                    logger.info("Returning {} products to client (async)", products.size());
-                    return ResponseEntity.ok(products);
-                })
-                .onErrorResume(e -> {
-                    logger.error("Error fetching products (async)", e);
-                    return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
-                });
+        logger.warn("Inventory service unavailable, returning fallback response", throwable);
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).build();
     }
 }
