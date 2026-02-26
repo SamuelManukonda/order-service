@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -78,9 +79,9 @@ class InventoryServiceClientTest {
         assertNotNull(products);
         assertEquals(2, products.size());
         assertEquals("Product 1", products.get(0).getName());
-        assertEquals(99.99, products.get(0).getPrice());
+        assertEquals(BigDecimal.valueOf( 99.99), products.get(0).getPrice());
         assertEquals("Product 2", products.get(1).getName());
-        assertEquals(49.99, products.get(1).getPrice());
+        assertEquals(BigDecimal.valueOf(49.99), products.get(1).getPrice());
     }
 
     @Test

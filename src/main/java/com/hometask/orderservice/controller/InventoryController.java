@@ -3,6 +3,7 @@ package com.hometask.orderservice.controller;
 import com.hometask.orderservice.dto.ProductDTO;
 import com.hometask.orderservice.service.InventoryServiceClient;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.swagger.v3.oas.annotations.Operation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -35,10 +36,12 @@ public class InventoryController {
     /**
      * Endpoint to fetch all products from inventory service (synchronous)
      *
+     * Only for demonstration purposes of circuit breaker. In real application this API would be in Inventory Service
      * @return ResponseEntity containing list of products
      */
     @CircuitBreaker(name = "inventoryService", fallbackMethod = "getStaticProductsFallback")
     @GetMapping("/products")
+    @Operation(summary = "Get all products", description = "Fetches all products from the inventory service only for demonstration of circuit breaker. In real application this API would be in Inventory Service")
     public ResponseEntity<List<ProductDTO>> getAllProducts() {
         logger.info("Received request to fetch all products");
 
