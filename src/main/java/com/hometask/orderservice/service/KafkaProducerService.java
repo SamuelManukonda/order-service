@@ -17,6 +17,9 @@ public class KafkaProducerService {
     @Value("${kafka.inventory.update.topic}")
     private String inventoryTopic;
 
+    @Value("${kafka.orders.topic}")
+    private String orderPlacedTopic;
+
 
     public KafkaProducerService(KafkaTemplate<String, Object> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
@@ -27,8 +30,12 @@ public class KafkaProducerService {
         kafkaTemplate.send(topic, message);
     }
 
-    public void sendOrderPlacedMessage(OrderPlaceRequest orderPlaceRequest) {
-        logger.info("Sending order placed message to topic 'update-inventory': {}", orderPlaceRequest);
+    public void updateInventoryMessage(OrderPlaceRequest orderPlaceRequest) {
+        logger.info("Sending update inventory message': {}", orderPlaceRequest);
         kafkaTemplate.send(inventoryTopic, orderPlaceRequest);
+    }
+    public void sendOrderPlaceRequest(OrderPlaceRequest orderPlaceRequest) {
+        logger.info("Sending order placed message to topic 'update-inventory': {}", orderPlaceRequest);
+        kafkaTemplate.send(orderPlacedTopic, orderPlaceRequest);
     }
 }

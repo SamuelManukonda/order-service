@@ -4,8 +4,6 @@ import com.hometask.orderservice.dto.OrderPlaceRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
-
 @Service
 public class OrderService {
 
@@ -21,13 +19,19 @@ public class OrderService {
     }
 
     public String placeOrder(String productId, int quantity) {
+        saveOrder(productId, quantity);
         updateInventory(productId, quantity);
         double random = Math.random() * 1000;
         return "Order placed successfully! " + random;
     }
 
+    private void saveOrder(String productId, int quantity) {
+        kafkaProducerService// Simulate saving order to database
+                .sendOrderPlaceRequest(new OrderPlaceRequest(productId, quantity));
+    }
+
     private void updateInventory(String productId, int quantity) {
         OrderPlaceRequest orderPlaceRequest = new OrderPlaceRequest(productId, quantity);
-        kafkaProducerService.sendOrderPlacedMessage(orderPlaceRequest);
+        kafkaProducerService.updateInventoryMessage(orderPlaceRequest);
     }
 }

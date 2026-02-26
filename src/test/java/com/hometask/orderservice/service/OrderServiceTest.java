@@ -45,7 +45,7 @@ class OrderServiceTest {
 
         // Verify that kafka message was sent
         ArgumentCaptor<OrderPlaceRequest> captor = ArgumentCaptor.forClass(OrderPlaceRequest.class);
-        verify(kafkaProducerService, times(1)).sendOrderPlacedMessage(captor.capture());
+        verify(kafkaProducerService, times(1)).updateInventoryMessage(captor.capture());
 
         OrderPlaceRequest capturedRequest = captor.getValue();
         assertEquals(productId, capturedRequest.productId());
@@ -67,7 +67,7 @@ class OrderServiceTest {
 
         // Verify that kafka message was sent with correct parameters
         ArgumentCaptor<OrderPlaceRequest> captor = ArgumentCaptor.forClass(OrderPlaceRequest.class);
-        verify(kafkaProducerService, times(1)).sendOrderPlacedMessage(captor.capture());
+        verify(kafkaProducerService, times(1)).updateInventoryMessage(captor.capture());
 
         OrderPlaceRequest capturedRequest = captor.getValue();
         assertEquals(productId, capturedRequest.productId());
@@ -86,7 +86,7 @@ class OrderServiceTest {
         // Assert
         assertNotNull(result);
         assertTrue(result.startsWith("Order placed successfully!"));
-        verify(kafkaProducerService, times(1)).sendOrderPlacedMessage(any(OrderPlaceRequest.class));
+        verify(kafkaProducerService, times(1)).updateInventoryMessage(any(OrderPlaceRequest.class));
     }
 
     @Test
@@ -99,7 +99,7 @@ class OrderServiceTest {
         orderService.placeOrder(productId, quantity);
 
         // Assert - verify that Kafka producer was called exactly once
-        verify(kafkaProducerService, times(1)).sendOrderPlacedMessage(any(OrderPlaceRequest.class));
+        verify(kafkaProducerService, times(1)).updateInventoryMessage(any(OrderPlaceRequest.class));
         verifyNoMoreInteractions(kafkaProducerService);
     }
 }

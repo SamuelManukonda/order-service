@@ -64,12 +64,12 @@ class KafkaProducerServiceTest {
     }
 
     @Test
-    void testSendOrderPlacedMessage_Success() {
+    void testUpdateInventoryMessage_Success() {
         // Arrange
         OrderPlaceRequest orderRequest = new OrderPlaceRequest("product456", 10);
 
         // Act
-        kafkaProducerService.sendOrderPlacedMessage(orderRequest);
+        kafkaProducerService.updateInventoryMessage(orderRequest);
 
         // Assert
         ArgumentCaptor<String> topicCaptor = ArgumentCaptor.forClass(String.class);
@@ -82,12 +82,12 @@ class KafkaProducerServiceTest {
     }
 
     @Test
-    void testSendOrderPlacedMessage_VerifyCorrectTopic() {
+    void testUpdateInventoryMessage_VerifyCorrectTopic() {
         // Arrange
         OrderPlaceRequest orderRequest = new OrderPlaceRequest("product789", 3);
 
         // Act
-        kafkaProducerService.sendOrderPlacedMessage(orderRequest);
+        kafkaProducerService.updateInventoryMessage(orderRequest);
 
         // Assert
         verify(kafkaTemplate, times(1)).send(eq("update-inventory"), eq(orderRequest));
@@ -95,14 +95,14 @@ class KafkaProducerServiceTest {
     }
 
     @Test
-    void testSendOrderPlacedMessage_WithDifferentQuantities() {
+    void testUpdateInventoryMessage_WithDifferentQuantities() {
         // Arrange
         OrderPlaceRequest orderRequest1 = new OrderPlaceRequest("product1", 1);
         OrderPlaceRequest orderRequest2 = new OrderPlaceRequest("product2", 100);
 
         // Act
-        kafkaProducerService.sendOrderPlacedMessage(orderRequest1);
-        kafkaProducerService.sendOrderPlacedMessage(orderRequest2);
+        kafkaProducerService.updateInventoryMessage(orderRequest1);
+        kafkaProducerService.updateInventoryMessage(orderRequest2);
 
         // Assert
         verify(kafkaTemplate, times(2)).send(eq("update-inventory"), any(OrderPlaceRequest.class));
