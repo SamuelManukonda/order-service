@@ -25,7 +25,7 @@ public class InventoryServiceClient {
 
     private static final String ALL_PRODUCTS_ENDPOINT = "/api/products/all";
     private static final int RETRY_ATTEMPTS = 3;
-    private static final Duration RETRY_DELAY = Duration.ofSeconds(3);
+    private static final Duration RETRY_DELAY = Duration.ofSeconds(1);
 
     private final WebClient inventoryWebClient;
 
@@ -63,7 +63,7 @@ public class InventoryServiceClient {
                     )
                     .bodyToFlux(ProductDTO.class)
                     .collectList()
-                    .retryWhen(Retry.backoff(RETRY_ATTEMPTS, RETRY_DELAY)
+                    .retryWhen(Retry.fixedDelay(RETRY_ATTEMPTS, RETRY_DELAY)
                             .doBeforeRetry(retrySignal ->
                                     logger.warn("Retrying API call to inventory service. Attempt: {}",
                                             retrySignal.totalRetries() + 1))

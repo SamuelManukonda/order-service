@@ -13,13 +13,23 @@ import org.springframework.web.bind.annotation.RestController;
 public class OrderController {
 
     private final OrderService orderService;
+    private final InventoryController inventoryController;
 
-    public OrderController(OrderService orderService) {
+    public OrderController(OrderService orderService, InventoryController inventoryController) {
         this.orderService = orderService;
+        this.inventoryController = inventoryController;
     }
 
   @PostMapping("/place/{productId}/{quantity}")
   public ResponseEntity<String> placeOrder(@PathVariable String productId, @PathVariable int quantity) {
+      var product = inventoryController.getAllProducts().getBody().stream()
+              .filter(it -> it.getId().equals(productId))
+              .findFirst()
+              .orElseThrow(() -> new RuntimeException("Product not found"));
+
+      if (product.getStock() < quantity) {
+          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Insufficient stock for product: " + productId);
+      }
       return ResponseEntity.status(HttpStatus.OK).body(orderService.placeOrder(productId, quantity));
   }
 }
