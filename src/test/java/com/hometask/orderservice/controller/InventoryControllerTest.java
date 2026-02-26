@@ -4,6 +4,10 @@ import com.hometask.orderservice.dto.ProductDTO;
 import com.hometask.orderservice.service.InventoryServiceClient;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
@@ -16,15 +20,18 @@ import static org.mockito.Mockito.*;
 /**
  * Unit tests for InventoryController
  */
+@ExtendWith(MockitoExtension.class)
 class InventoryControllerTest {
 
+    @Mock
     private InventoryServiceClient inventoryServiceClient;
+
+    @InjectMocks
     private InventoryController inventoryController;
 
     @BeforeEach
     void setUp() {
-        inventoryServiceClient = mock(InventoryServiceClient.class);
-        inventoryController = new InventoryController(inventoryServiceClient);
+        // Mocks are injected automatically by MockitoExtension
     }
 
     @Test
@@ -44,6 +51,7 @@ class InventoryControllerTest {
         assertEquals(200, response.getStatusCode().value());
         assertNotNull(response.getBody());
         assertEquals(2, response.getBody().size());
+        verify(inventoryServiceClient, times(1)).getAllProducts();
     }
 
     @Test
@@ -58,5 +66,33 @@ class InventoryControllerTest {
         assertNotNull(response);
         assertEquals(503, response.getStatusCode().value());
         assertNull(response.getBody());
+    }
+
+    @Test
+    void testGetAllProducts_EmptyList() {
+        // Arrange
+        when(inventoryServiceClient.getAllProducts()).thenReturn(List.of());
+
+        // Act
+        ResponseEntity<List<ProductDTO>> response = inventoryController.getAllProducts();
+
+        // Assert
+        assertNotNull(response);
+        assertEquals(200, response.getStatusCode().value());
+        assertNotNull(response.getBody());
+        assertEquals(0, response.getBody().size());
+    }
+
+    @Test
+    void testGetAllProducts_Exception() {
+        // Arrange
+        when(inventoryServiceClient.getAllProducts()).thenThrow(new RuntimeException("Service unavailable"));
+
+        // Act
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> inventoryController.getAllProducts());
+
+        // Assert
+        assertNotNull(exception);
+        assertTrue(exception.getMessage().contains("Service unavailable"));
     }
 }
