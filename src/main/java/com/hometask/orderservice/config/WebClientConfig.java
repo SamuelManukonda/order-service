@@ -63,7 +63,7 @@ public class WebClientConfig {
      */
     private ExchangeFilterFunction logRequest() {
         return ExchangeFilterFunction.ofRequestProcessor(clientRequest -> {
-            logger.info("Outgoing Request: {} {}", clientRequest.method(), clientRequest.url());
+            logger.debug("Outgoing Request: {} {}", clientRequest.method(), clientRequest.url());
             return Mono.just(clientRequest);
         });
     }
@@ -76,7 +76,7 @@ public class WebClientConfig {
      */
     private ExchangeFilterFunction logResponse() {
         return ExchangeFilterFunction.ofResponseProcessor(clientResponse -> {
-            logger.info("Incoming Response: Status Code {}", clientResponse.statusCode());
+            logger.debug("Incoming Response: Status Code {}", clientResponse.statusCode());
             return Mono.just(clientResponse);
         });
     }
