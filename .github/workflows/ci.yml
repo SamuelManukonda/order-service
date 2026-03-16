@@ -76,7 +76,7 @@ jobs:
           PROJECT_NAME=$(mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout)
 
           ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY=my-space/order
+          ECR_REPOSITORY=my-space/inventory
           IMAGE_TAG=${PROJECT_NAME}-${PROJECT_VERSION}
 
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
@@ -103,7 +103,7 @@ jobs:
           IMAGE_TAG=${PROJECT_NAME}-${PROJECT_VERSION}
           AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
           ECR_REGISTRY=${AWS_ACCOUNT_ID}.dkr.ecr.eu-west-1.amazonaws.com
-          IMAGE_URI=$ECR_REGISTRY/my-space/order:$IMAGE_TAG
+          IMAGE_URI=$ECR_REGISTRY/my-space/inventory:$IMAGE_TAG
           
           # Download current task definition, stripping read-only fields
           aws ecs describe-task-definition \
