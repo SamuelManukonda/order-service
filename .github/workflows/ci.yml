@@ -126,7 +126,7 @@ jobs:
         run: |
           # Get the ARN of the newly registered task definition
           TASK_DEF_ARN=$(aws ecs describe-task-definition \
-            --task-definition order-service \
+            --task-definition order-service-task \
             --region eu-west-1 \
             --query "taskDefinition.taskDefinitionArn" \
             --output text)
